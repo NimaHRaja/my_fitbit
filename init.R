@@ -1,10 +1,7 @@
-##### setup (using https://github.com/mrkaye97/fitbitr?tab=readme-ov-file)
-
-# install.packages("fitbitr")
-# install.packages("devtools")
-# devtools::install_github("mrkaye97/fitbitr")
-
+library(dplyr)
 library(fitbitr)
+library(httr)
+library(jsonlite)
 
 nima_login_data <- 
   read.csv("my_login_data.csv")
@@ -15,7 +12,3 @@ nima_login_data <-
   client_secret = nima_login_data$client_secret,
   callback = nima_login_data$callback
 )
-
-get_steps("2024-11-11", "2024-11-30")
-
-

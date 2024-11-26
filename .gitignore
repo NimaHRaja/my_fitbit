@@ -3,3 +3,4 @@
 *.Rproj
 .Rhistory
 my_login_data.csv
+data/
