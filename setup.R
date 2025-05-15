@@ -15,7 +15,3 @@ nima_login_data <-
   client_secret = nima_login_data$client_secret,
   callback = nima_login_data$callback
 )
-
-get_steps("2024-11-11", "2024-11-30")
-
-
