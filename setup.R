@@ -4,7 +4,11 @@
 # install.packages("devtools")
 # devtools::install_github("mrkaye97/fitbitr")
 
+library(dplyr)
 library(fitbitr)
+library(httr)
+library(jsonlite)
+
 
 nima_login_data <- 
   read.csv("my_login_data.csv")
