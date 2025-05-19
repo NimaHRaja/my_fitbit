@@ -14,7 +14,7 @@ nima_login_data <-
 
 DF_steps <- 
   rbind(
-    get_steps("2024-01-01", "2025-05-14"),
+    get_steps("2024-01-01", "2025-05-18"),
     get_steps("2022-01-01", "2023-12-31"),
     get_steps("2020-01-01", "2021-12-31"),
     get_steps("2018-01-01", "2019-12-31"),
@@ -58,9 +58,10 @@ output %>%
 #   ggplot(aes(x = num_days, y = date, colour = mean_steps)) + geom_point() +
 #   scale_colour_gradient(low = "green", high = "red")
 
-DF_steps %>% mutate(
-  aaa = (34544356 - a)/((as.Date("2025-05-14") - as.Date(date)) %>% as.integer())
-) %>% 
+DF_steps %>% 
+  mutate(maxa = max(a)) %>% 
+  mutate(today = max(date)) %>% 
+  mutate(aaa = (maxa - a)/((as.Date(today) - as.Date(date)) %>% as.integer())) %>% 
   ggplot(aes(x = date, y = aaa)) + geom_point(colour = "blue")
 
 
@@ -73,3 +74,15 @@ DF_steps  %>% mutate(b = lag(n = 28,a)) %>% mutate(mean_steps = (a - b)/28) %>%
   mutate(mean_steps = if_else(is.na(mean_steps),a/28,mean_steps)) %>% 
   filter(date > '2016-10-08') %>% 
   ggplot(aes(x = date, y = mean_steps)) + geom_point(colour = "blue") + geom_smooth()
+
+
+DF_steps %>% 
+  ggplot(aes(x = date, y = steps)) + geom_smooth()
+
+
+DF_steps %>% 
+  ggplot(aes(x = date, y = steps)) + geom_point(colour = "blue") +
+  geom_hline(yintercept = 10000, colour = "red") +
+  geom_hline(yintercept = 11111, colour = "red") +
+  geom_hline(yintercept = 12000, colour = "red") +
+  geom_hline(yintercept = 12500, colour = "red")
