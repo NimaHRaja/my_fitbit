@@ -1,3 +1,6 @@
+##### Reads all activities_list (in JSON format), extracts the links to tcx files for individual tracks, 
+##### and removes the duplicates
+
 all_list_of_activity_files <- list.files("data/activities_list/")
 
 for (a_file in all_list_of_activity_files){   
