@@ -1,3 +1,5 @@
+##### Gets the first $limit$ tracks from $start_date$ from fitbit and writes them into a local file.
+
 get_and_save_list_of_acitivities <- function(start_date, limit){
   GET(
     paste(
