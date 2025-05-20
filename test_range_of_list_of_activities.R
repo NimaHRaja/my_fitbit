@@ -1,3 +1,5 @@
+##### reads activities files and tests their sanity
+
 a_file <- list.files("data/activities_list/")[3]
 
 do.call("rbind",
