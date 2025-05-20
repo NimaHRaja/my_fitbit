@@ -1,3 +1,7 @@
+##### Reads a list of tracks to be downloaded, if they are not already downloaded and the track is not null 
+##### downloads the track and writes them into a local file. Also controls for "limit reached" error.
+
+
 list_of_activities <- 
   read.csv("data/clean_list_of_activities.csv", colClasses = rep("character",3)) 
 

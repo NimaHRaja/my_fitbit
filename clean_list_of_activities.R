@@ -1,5 +1,5 @@
 ##### Reads all activities_list (in JSON format), extracts the links to tcx files for individual tracks, 
-##### and removes the duplicates
+##### removes the duplicates, and writes them into clean_list_of_activities.csv
 
 all_list_of_activity_files <- list.files("data/activities_list/")
 
