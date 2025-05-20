@@ -1,8 +1,6 @@
-##### setup (using https://github.com/mrkaye97/fitbitr?tab=readme-ov-file)
+##### Link: https://github.com/mrkaye97/fitbitr?tab=readme-ov-file
 
-# install.packages("fitbitr")
-# install.packages("devtools")
-# devtools::install_github("mrkaye97/fitbitr")
+##### loading libraries and connecting to fitbit
 
 library(dplyr)
 library(fitbitr)
