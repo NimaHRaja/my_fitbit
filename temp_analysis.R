@@ -15,7 +15,8 @@ nima_login_data <-
 
 DF_steps <- 
   rbind(
-    get_steps("2024-01-01", "2025-11-30"),
+    get_steps("2026-01-01", "2026-06-24"),
+    get_steps("2024-01-01", "2025-12-31"),
     get_steps("2022-01-01", "2023-12-31"),
     get_steps("2020-01-01", "2021-12-31"),
     get_steps("2018-01-01", "2019-12-31"),
@@ -40,7 +41,8 @@ best_ndays <-
 
 best_ndays %>% 
   group_by(substr(date,0,4)) %>% 
-  summarise(min(num_days), max(num_days))
+  summarise(min(num_days), max(num_days)) %>% 
+  View()
 
 
 best_ndays %>% 
@@ -50,7 +52,7 @@ best_ndays %>%
 
 
 best_ndays %>%
-  filter(mean_steps < 15000) %>% 
+  filter(mean_steps < 15000) %>%
   ggplot(aes(x = num_days, y = mean_steps, colour = substr(date,0,4))) + 
   geom_point()
 
@@ -67,6 +69,19 @@ best_ndays %>%
   ggplot(aes(x = num_days, y = mean_steps, colour = substr(date,0,7))) + 
   geom_point()
 
+
+DF_steps %>% 
+  mutate(num_days = (max(date) - date) %>% as.numeric() + 1, recent_tot_steps = (max(a) - a)) %>% 
+  select(num_days, recent_tot_steps) %>% 
+  inner_join(best_ndays %>%  select(num_days, date, mean_steps), by = "num_days") %>% 
+  # filter(date < max(date)-40) %>% 
+  mutate(target = mean_steps * num_days - recent_tot_steps) %>%  
+  # group_by(target) %>% 
+  # mutate(aaa = n()) %>% 
+  # filter(aaa >1) %>% 
+  # filter(target <= 13000) %>% 
+  # filter(date <= '2026-01-01') %>% 
+  View()
 
 
 # best_ndays %>%
@@ -138,6 +153,18 @@ DF_steps %>%
 
 
 DF_steps %>% 
+  mutate(b = lag(n = 91,a)) %>%
+  mutate(mean_steps = (a - b)/91) %>% 
+  mutate(mean_steps = if_else(is.na(mean_steps),a/91,mean_steps)) %>%
+  filter(date > '2016-10-08') %>% 
+  ggplot(aes(x = date, y = mean_steps)) + 
+  geom_point(colour = "blue") + 
+  geom_smooth() +
+  ggtitle("91-days moving average")
+
+
+
+DF_steps %>% 
   mutate(b = lag(n = 365,a)) %>%
   mutate(mean_steps = (a - b)/365) %>% 
   mutate(mean_steps = if_else(is.na(mean_steps),a/365,mean_steps)) %>% 
@@ -161,6 +188,7 @@ DF_steps %>%
   # geom_hline(yintercept = 11111, colour = "red") +
   geom_hline(yintercept = 12000, colour = "red") +
   geom_hline(yintercept = 12500, colour = "red") +
+  geom_hline(yintercept = 13000, colour = "red") +
   ylim(c(11000,14000))
 
 #################
@@ -195,7 +223,7 @@ DF <-
 
 DF <- DF %>% group_by(num_days, target) %>% summarise(date = max(date), .groups = "drop")
 
-
+DF %>% group_by(num_days) %>% summarise(max(target), min(target))
 
 DF %>% 
   ggplot(aes(x = target, y = num_days)) + 
@@ -232,7 +260,7 @@ rbind(
     select(target, num_days = num_days.x, date = date.x) %>% mutate(type = "new"),
   inner_join(DF, DF2, by = c("target")) %>% filter(num_days.x != num_days.y) %>% 
     select(target, num_days = num_days.y, date = date.y) %>% mutate(type = "old")) %>% View()
-  ggplot(aes(x = target, y = num_days, colour = substr(date,0,7))) + 
+ggplot(aes(x = target, y = num_days, colour = substr(date,0,7))) + 
   geom_point()
 
 
@@ -250,7 +278,7 @@ best_ndays_minsteps <-
             DF_rolling <- 
               DF_steps %>% 
               # filter(date < '2025-07-21') %>% 
-                mutate(rolling_min = -rollmax(-steps, num_days, align = "right", fill = "NA"))
+              mutate(rolling_min = -rollmax(-steps, num_days, align = "right", fill = "NA"))
             
             
             
@@ -286,7 +314,7 @@ best_ndays_minsteps %>%
 
 asfsf <- 
   do.call("rbind",
-          lapply(seq(from = 1, to = 120, by = 1), function(num_days){
+          lapply(seq(from = 1, to = 500, by = 1), function(num_days){
             
             DF_rolling <- 
               DF_steps %>% 
@@ -315,8 +343,8 @@ asfsf %>%
   group_by(date, rolling_min) %>%
   summarise(n(),min(num_days),max(num_days)) %>%
   View()
-  # filter(rolling_min < 15000) %>% 
-  ggplot(aes(x = target, y = num_days, colour = substr(date,0,4))) + 
+# filter(rolling_min < 15000) %>% 
+ggplot(aes(x = target, y = num_days, colour = substr(date,0,4))) + 
   geom_point() + 
   ggtitle("longest streak of days with a minimum of X steps")
 
@@ -336,7 +364,7 @@ asfsf %>%
   filter(num_days == max(num_days)) %>% 
   ungroup() %>% 
   group_by(target, num_days) %>% 
-  filter(date == max(date)) %>% 
+  filter(date == max(date)) %>% View()
   # filter(rolling_min < 15000) %>% 
   ggplot(aes(x = target, y = num_days, colour = substr(date,0,7))) + 
   geom_point() + 
