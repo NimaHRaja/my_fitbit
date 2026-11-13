@@ -1,25 +1,34 @@
-##### Reads all activities_list (in JSON format), extracts the links to tcx files for individual tracks, 
-##### removes the duplicates, and writes them into clean_list_of_activities.csv
+##### Reads all Google Health activity lists (JSON format),
+##### extracts activity IDs and start times, removes duplicates,
+##### and saves the results as a CSV file.
 
-all_list_of_activity_files <- list.files("data/activities_list/")
-
-for (a_file in all_list_of_activity_files){   
-  activities_json <-
-    read_json(paste("data/activities_list/", a_file, sep = ""))
+clean_list_of_activities <- function(){
+  all_list_of_activity_files <-
+    list.files("data/activities_list/ghealth/",
+               pattern = "\\.json$",
+               full.names = TRUE)
   
-  do.call("rbind",
-          lapply(activities_json$activities, function(x)
-            data.frame(logId = x$logId %>% as.character(),
-                       startTime = x$originalStartTime %>% as.character(),
-                       tcxLink = ifelse(("tcxLink" %in% names(x)), x$tcxLink %>% as.character(), "")))) %>%
-    write.table("data/clean_list_of_activities.csv", append = TRUE, col.names = FALSE, row.names = FALSE, sep = ",")
+  list_of_activities <-
+    do.call("rbind",
+            lapply(all_list_of_activity_files, function(a_file){
+              
+              activities_json <- read_json(a_file)
+              
+              do.call("rbind",
+                      lapply(activities_json$dataPoints, function(x)
+                        data.frame(
+                          id = as.character(x$id),
+                          start = as.character(x$start),
+                          end = as.character(x$end),
+                          exerciseType = as.character(x$exerciseType),
+                          hasGps = if(is.null(x$exerciseMetadata$hasGps)) NA else x$exerciseMetadata$hasGps,
+                          source = as.character(x$source)
+                        )))
+            }))
+  
+  list_of_activities %>%
+    distinct(id, .keep_all = TRUE) %>%
+    arrange(start) %>%
+    write.csv("data/clean_list_of_activities_ghealth.csv",
+              row.names = FALSE)
 }
-
-
-read.csv("data/clean_list_of_activities.csv", colClasses = rep("character",3)) %>% unique() %>% 
-  arrange(startTime) %>% 
-  filter(tcxLink != "") %>% 
-  write.csv("data/clean_list_of_activities.csv", row.names = FALSE)
-
-
-
